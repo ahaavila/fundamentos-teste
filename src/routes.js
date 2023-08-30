@@ -10,6 +10,10 @@ export const routes = [
         handler: (req, res) => {
             const { title, description } = req.body
 
+            if(!title) return res.writeHead(400).end(JSON.stringify({ message: 'title is required' }))
+
+            if(!description) return res.writeHead(400).end(JSON.stringify({ message: 'description is required' }))
+
             const task = {
                 id: randomUUID(),
                 title,
@@ -21,7 +25,7 @@ export const routes = [
 
             database.insert('tasks', task)
 
-            return res.writeHead(201).end()
+            return res.writeHead(201).end(JSON.stringify({ message: 'task created' }))
         }
     },
     {
@@ -40,13 +44,21 @@ export const routes = [
             const { id } = req.params
             const { title, description } = req.body
 
-            database.update('tasks', id, {
-                title,
-                description,
-                updated_at: new Date()
-            })
+            if(!title) res.writeHead(400).end(JSON.stringify({ message: 'title is required' }))
 
-            return res.writeHead(204).end()
+            if(!description) res.writeHead(400).end(JSON.stringify({ message: 'description is required' }))
+
+            try {
+                database.update('tasks', id, {
+                    title,
+                    description,
+                    updated_at: new Date()
+                })
+
+                return res.writeHead(204).end(JSON.stringify({ message: 'task updated' }))
+            } catch {
+                return res.writeHead(400).end(JSON.stringify({ message: 'task not found' }))
+            }
         }
     },
     {
@@ -55,9 +67,13 @@ export const routes = [
         handler: (req, res) => {
             const { id } = req.params
 
-            database.delete('tasks', id)
+            try {
+                database.delete('tasks', id)
 
-            return res.writeHead(204).end()
+                return res.writeHead(204).end(JSON.stringify({ message: 'task deleted' }))
+            } catch {
+                return res.writeHead(400).end(JSON.stringify({ message: 'task not found' }))
+            }            
         }
     },
     {
@@ -66,12 +82,16 @@ export const routes = [
         handler: (req, res) => {
             const { id } = req.params
 
-            database.update('tasks', id, {
-                completed_at: new Date(),
-                updated_at: new Date()
-            })
+            try {
+                database.update('tasks', id, {
+                    completed_at: new Date(),
+                    updated_at: new Date()
+                })
 
-            return res.writeHead(204).end()
+                return res.writeHead(204).end(JSON.stringify({ message: 'task completed' }))
+            } catch {
+                return res.writeHead(400).end(JSON.stringify({ message: 'task not found' }))
+            }
         }
     }
 ]

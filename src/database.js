@@ -45,6 +45,8 @@ export class Database {
                 this.#database[table][rowIndex][key] = data[key]
             })
             this.#persist()
+        } else {
+           throw new Error()
         }
     }
 
@@ -54,6 +56,8 @@ export class Database {
         if (rowIndex > -1) {
             this.#database[table].splice(rowIndex, 1)
             this.#persist()
+        } else {
+            throw new Error()
         }
     }
 }
