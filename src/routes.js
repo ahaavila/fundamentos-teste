@@ -8,15 +8,15 @@ export const routes = [
         method: 'POST',
         path: buildRoutePath('/tasks'),
         handler: (req, res) => {
-            const { title, description, completed_at, created_at, updated_at } = req.body
+            const { title, description } = req.body
 
             const task = {
                 id: randomUUID(),
                 title,
                 description,
-                completed_at,
-                created_at,
-                updated_at
+                completed_at: null,
+                created_at: new Date(),
+                updated_at: new Date()
             }
 
             database.insert('tasks', task)
@@ -38,14 +38,12 @@ export const routes = [
         path: buildRoutePath('/tasks/:id'),
         handler: (req, res) => {
             const { id } = req.params
-            const { title, description, completed_at, created_at, updated_at } = req.body
+            const { title, description } = req.body
 
             database.update('tasks', id, {
                 title,
                 description,
-                completed_at,
-                created_at,
-                updated_at
+                updated_at: new Date()
             })
 
             return res.writeHead(204).end()
@@ -62,4 +60,18 @@ export const routes = [
             return res.writeHead(204).end()
         }
     },
+    {
+        method: 'PATCH',
+        path: buildRoutePath('/tasks/:id/complete'),
+        handler: (req, res) => {
+            const { id } = req.params
+
+            database.update('tasks', id, {
+                completed_at: new Date(),
+                updated_at: new Date()
+            })
+
+            return res.writeHead(204).end()
+        }
+    }
 ]
